@@ -3,28 +3,12 @@ import { useDispatch } from "react-redux";
 import {
   addPatient,
   updatePatient,
-  deletePatient
+  deletePatient,
+  fetchPatients
 } from "./redux/actions";
 
-export const usePatientActions = () => {
-  const dispatch = useDispatch();
-
-  const handleAddAndUpdatePatient = async (e, newPatient) => {
-    e.preventDefault();
-    if (newPatient.id) {
-      await dispatch(updatePatient(newPatient));
-    } else {
-      await dispatch(addPatient(newPatient));
-    }
-  };
-
-  const handleDeletePatient = (patientId) => {
-    dispatch(deletePatient(patientId));
-  };
-
-  return { handleAddAndUpdatePatient, handleDeletePatient };
-};
 export const useModals = () => {
+  const dispatch = useDispatch();
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [patientToDelete, setPatientToDelete] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
@@ -54,6 +38,23 @@ export const useModals = () => {
     setPatientToDelete(null);
   };
 
+  const handleAddAndUpdatePatient = async (e, newPatient) => {
+    e.preventDefault();
+    if (newPatient.id) {
+      await dispatch(updatePatient(newPatient));
+    } else {
+      await dispatch(addPatient(newPatient));
+    }
+    setShowUpdateModal(false);
+    dispatch(fetchPatients());
+  };
+
+  const handleDeletePatient = () => {
+    dispatch(deletePatient(patientToDelete.id));
+    setOpenConfirmDialog(false);
+    setPatientToDelete(null);
+  };
+
   return {
     openConfirmDialog,
     setOpenConfirmDialog,
@@ -66,5 +67,7 @@ export const useModals = () => {
     handleOpenAddModal,
     handleCloseAddModal,
     handleOpenUpdateModal,
+    handleAddAndUpdatePatient,
+    handleDeletePatient
   };
 };

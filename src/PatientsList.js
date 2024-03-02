@@ -1,33 +1,20 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { Button, Grid } from "@mui/material";
 import { fetchPatients } from "./redux/actions";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  Typography,
-  Grid,
-  Box,
-  Snackbar,
-  Alert,
-  LinearProgress,
-} from "@mui/material";
-import PatientModal from "./PatientModal";
+import { useModals } from "./hooks";
 import ConfirmationDialog from "./ConfirmationDialog";
-import { usePatientActions, useModals } from "./usePatientActions";
+import PatientModal from "./PatientModal";
+import PatientsTable from "./PatientsTable";
+import PatientTableRow from "./PatientTableRow";
+import { Loader, ErrorState, Title } from "./CoomonComponents";
 
 const PatientsList = () => {
   const dispatch = useDispatch();
   const patients = useSelector((state) => state.patients.patients);
   const loading = useSelector((state) => state.patients.loading);
   const error = useSelector((state) => state.patients.error);
-  const { handleAddAndUpdatePatient, handleDeletePatient } =
-    usePatientActions();
+
   const {
     openConfirmDialog,
     setOpenConfirmDialog,
@@ -39,9 +26,10 @@ const PatientsList = () => {
     handleOpenAddModal,
     handleCloseAddModal,
     handleOpenUpdateModal,
+    handleAddAndUpdatePatient,
+    handleDeletePatient
   } = useModals();
 
-  // Fetch patients on component mount
   useEffect(() => {
     dispatch(fetchPatients());
   }, [dispatch]);
@@ -49,74 +37,26 @@ const PatientsList = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        {loading && (
-          <Box sx={{ width: "100%" }}>
-            <LinearProgress />
-          </Box>
-        )}
-
-        <Snackbar
-          open={!!error}
-          autoHideDuration={4000}
-          onClose={() => null}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        >
-          <Alert severity="error">{(error && error.message) || error}</Alert>
-        </Snackbar>
-
-        <Typography variant="h4" gutterBottom>
-          Patients List
-        </Typography>
+        <Loader loading={loading} />
+        <ErrorState error={error} />
+        <Title />
         <Button variant="contained" onClick={handleOpenAddModal}>
           Add Patient
         </Button>
       </Grid>
 
       <Grid item xs={12}>
-        <Paper elevation={3}>
-          <TableContainer component={Paper}>
-            <Table size="small">
-              <TableHead>
-                <TableRow>
-                  <TableCell>ID</TableCell>
-                  <TableCell>Name</TableCell>
-                  <TableCell>Email</TableCell>
-                  <TableCell>DoB</TableCell>
-                  <TableCell align="right">Actions</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {patients.map((patient) => (
-                  <TableRow key={patient.id}>
-                    <TableCell>{patient.id}</TableCell>
-                    <TableCell>
-                      {patient.first_name} {patient.last_name}
-                    </TableCell>
-                    <TableCell>{patient.email}</TableCell>
-                    <TableCell>{patient.date_of_birth}</TableCell>
-                    <TableCell align="right">
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={() => handleOpenUpdateModal(patient)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        color="error"
-                        onClick={() => handleOpenConfirmDialog(patient)}
-                      >
-                        Delete
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+        <PatientsTable>
+          {patients.map((patient) => (
+            <PatientTableRow
+              key={patient.id}
+              patient={patient}
+              handleOpenUpdateModal={handleOpenUpdateModal}
+              handleOpenConfirmDialog={handleOpenConfirmDialog}
+            />
+          ))}
+        </PatientsTable>
+
         <ConfirmationDialog
           open={openConfirmDialog}
           onClose={handleCloseConfirmDialog}
