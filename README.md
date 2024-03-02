@@ -1,5 +1,11 @@
 ## Available Scripts
 
+Project Made using 
+node --version 
+v21.0.0
+npm --version
+10.2.0
+
 In the project directory, you can run:
 
 ### Make Sure! , Rest API is working  (http://localhost:3000 is whitelisted in django for cors)
