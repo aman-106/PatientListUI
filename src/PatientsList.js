@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPatients,
@@ -17,29 +17,16 @@ import {
   Button,
   Typography,
   Grid,
+  CircularProgress,
+  Snackbar,
+  Alert
 } from "@mui/material";
 import PatientModal from "./PatientModal";
 import ConfirmationDialog from "./ConfirmationDialog";
 
-const PatientsList = () => {
+const usePatientActions = () => {
   const dispatch = useDispatch();
-  const patients = useSelector((state) => state.patients.patients);
-  const loading = useSelector((state) => state.patients.loading);
-  const error = useSelector((state) => state.patients.error);
 
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-
-  // State for confirmation dialog
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [patientToDelete, setPatientToDelete] = useState(null);
-
-  // Fetch patients on component mount
-  useEffect(() => {
-    dispatch(fetchPatients());
-  }, [dispatch]);
-
-  // Handle form submissions for adding/updating patients
   const handleAddAndUpdatePatient = async (e, newPatient) => {
     e.preventDefault();
     if (newPatient.id) {
@@ -47,14 +34,24 @@ const PatientsList = () => {
     } else {
       await dispatch(addPatient(newPatient));
     }
-    setShowUpdateModal(false);
-    dispatch(fetchPatients());
   };
 
-  // Handle opening/closing add and update modals
+  const handleDeletePatient = (patientId) => {
+    dispatch(deletePatient(patientId));
+  };
+
+  return { handleAddAndUpdatePatient, handleDeletePatient };
+};
+
+const useModals = () => {
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [patientToDelete, setPatientToDelete] = useState(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedPatient, setSelectedPatient] = useState(null);
+
   const handleOpenAddModal = () => {
     setShowUpdateModal(true);
-    setSelectedPatient(null); // Clear selected patient for adding
+    setSelectedPatient(null);
   };
 
   const handleCloseAddModal = () => {
@@ -66,11 +63,6 @@ const PatientsList = () => {
     setShowUpdateModal(true);
   };
 
-  const handleCloseUpdateModal = () => {
-    setShowUpdateModal(false);
-  };
-
-  // Handle opening/closing confirmation dialog for deletion
   const handleOpenConfirmDialog = (patient) => {
     setPatientToDelete(patient);
     setOpenConfirmDialog(true);
@@ -81,16 +73,60 @@ const PatientsList = () => {
     setPatientToDelete(null);
   };
 
-  // Handle user confirmation for deletion
-  const handleDeletePatient = () => {
-    dispatch(deletePatient(patientToDelete.id));
-    setOpenConfirmDialog(false);
-    setPatientToDelete(null);
+  return {
+    openConfirmDialog,
+    setOpenConfirmDialog,
+    patientToDelete,
+    handleOpenConfirmDialog,
+    handleCloseConfirmDialog,
+    showUpdateModal,
+    setShowUpdateModal,
+    selectedPatient,
+    handleOpenAddModal,
+    handleCloseAddModal,
+    handleOpenUpdateModal,
   };
+};
+
+const PatientsList = () => {
+  const dispatch = useDispatch();
+  const patients = useSelector((state) => state.patients.patients);
+  const loading = useSelector((state) => state.patients.loading);
+  const error = useSelector((state) => state.patients.error);
+  const { handleAddAndUpdatePatient, handleDeletePatient } =
+    usePatientActions();
+  const {
+    openConfirmDialog,
+    setOpenConfirmDialog,
+    patientToDelete,
+    handleOpenConfirmDialog,
+    handleCloseConfirmDialog,
+    showUpdateModal,
+    selectedPatient,
+    handleOpenAddModal,
+    handleCloseAddModal,
+    handleOpenUpdateModal,
+  } = useModals();
+
+  // ... handle data fetching, error, and loading states
+  // Fetch patients on component mount
+  useEffect(() => {
+    dispatch(fetchPatients());
+  }, [dispatch]);
 
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
+        {/* Display loading indicator if loading is true */}
+        {loading && <CircularProgress size={48} />}
+
+        {/* Display error banner if error is present */}
+        {error && (
+          <Snackbar open={true} autoHideDuration={4000} onClose={() => null}>
+            <Alert severity="error">{error.message}</Alert> // Adjust error
+            message formatting as needed
+          </Snackbar>
+        )}
         <Typography variant="h4" gutterBottom>
           Patients List
         </Typography>
