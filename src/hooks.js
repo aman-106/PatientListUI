@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useDispatch } from "react-redux";
 import {
   addPatient,
   updatePatient,
   deletePatient,
-  fetchPatients
+  fetchPatients,
 } from "./redux/actions";
 
 export const useModals = () => {
@@ -13,51 +13,59 @@ export const useModals = () => {
   const [patientToDelete, setPatientToDelete] = useState(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-
   const [updateSuccess, setUpdateSuccess] = useState(false);
 
-  const handleOpenAddModal = () => {
+  const handleOpenAddModal = useCallback(() => {
     setShowUpdateModal(true);
     setSelectedPatient(null);
-  };
+  }, []);
 
-  const handleCloseAddModal = () => {
+  const handleCloseAddModal = useCallback(() => {
     setShowUpdateModal(false);
-  };
+  }, []);
 
-  const handleOpenUpdateModal = (patient) => {
+  const handleOpenUpdateModal = useCallback((patient) => {
     setSelectedPatient(patient);
     setShowUpdateModal(true);
-  };
+  }, []);
 
-  const handleOpenConfirmDialog = (patient) => {
+  const handleOpenConfirmDialog = useCallback((patient) => {
     setPatientToDelete(patient);
     setOpenConfirmDialog(true);
-  };
+  }, []);
 
-  const handleCloseConfirmDialog = () => {
+  const handleCloseConfirmDialog = useCallback(() => {
     setOpenConfirmDialog(false);
     setPatientToDelete(null);
-  };
+  }, []);
 
-  const handleAddAndUpdatePatient = async (e, newPatient) => {
-    e.preventDefault();
-    if (newPatient.id) {
-      await dispatch(updatePatient(newPatient));
-    } else {
-      await dispatch(addPatient(newPatient));
+  const handleAddAndUpdatePatient = useCallback(
+    async (newPatient) => {
+      try {
+        if (newPatient.id) {
+          await dispatch(updatePatient(newPatient));
+        } else {
+          await dispatch(addPatient(newPatient));
+        }
+        setUpdateSuccess(true);
+        setShowUpdateModal(false);
+        dispatch(fetchPatients());
+      } catch (error) {
+        console.error("Error adding/updating patient:", error);
+      }
+    },
+    [dispatch]
+  );
+
+  const handleDeletePatient = useCallback(async () => {
+    try {
+      await dispatch(deletePatient(patientToDelete.id));
+      setOpenConfirmDialog(false);
+      setUpdateSuccess(true);
+    } catch (error) {
+      console.error("Error deleting patient:", error);
     }
-    setUpdateSuccess(true);
-    setShowUpdateModal(false);
-    dispatch(fetchPatients());
-  };
-
-  const handleDeletePatient = () => {
-    dispatch(deletePatient(patientToDelete.id));
-    setOpenConfirmDialog(false);
-    setPatientToDelete(null);
-    setUpdateSuccess(true);
-  };
+  }, [dispatch, patientToDelete]);
 
   return {
     openConfirmDialog,
@@ -74,6 +82,6 @@ export const useModals = () => {
     handleAddAndUpdatePatient,
     handleDeletePatient,
     setUpdateSuccess,
-    updateSuccess
+    updateSuccess,
   };
 };

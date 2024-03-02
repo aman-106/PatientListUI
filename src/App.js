@@ -1,4 +1,3 @@
-import './App.css';
 import PatientsList from './PatientsList';
 
 function App() {

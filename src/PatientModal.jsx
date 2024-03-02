@@ -78,13 +78,18 @@ const PatientModal = ({ open, patient, onClose, onSave }) => {
   const handleSave = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      onSave(e, PatientDataAdapter.convertToApiFormat(formData));
+      onSave(PatientDataAdapter.convertToApiFormat(formData));
       setFormData(defaultdata);
       onClose();
     }
   };
 
-  // Optionally, update form data on component mount if editing a patient
+  const handleClose = (e)=>{
+    e.preventDefault();
+    setFormData(defaultdata);
+    onClose();
+  }
+
   useEffect(() => {
     if (patient) {
       setFormData(getPatientInitialData(patient)); // Update form with existing patient data
@@ -92,7 +97,7 @@ const PatientModal = ({ open, patient, onClose, onSave }) => {
   }, [patient]);
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={handleClose}>
       <DialogTitle>{patient ? "Edit Patient" : "Add Patient"}</DialogTitle>
       <DialogContent>
         <TextField
@@ -141,7 +146,7 @@ const PatientModal = ({ open, patient, onClose, onSave }) => {
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={handleClose}>Cancel</Button>
         <Button type="submit" variant="contained" onClick={handleSave}>
           {patient ? "Save Changes" : "Add Patient"}
         </Button>

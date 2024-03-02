@@ -2,7 +2,9 @@
 
 In the project directory, you can run:
 
-Make Sure! , Rest API is working 
+### Make Sure! , Rest API is working  (http://localhost:3000 is whitelisted in django for cors)
+
+### npm install
 
 ### `REACT_APP_API_BASE_URL=http://127.0.0.1:8000/api npm start`
 
