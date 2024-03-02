@@ -14,6 +14,8 @@ export const useModals = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
 
+  const [updateSuccess, setUpdateSuccess] = useState(false);
+
   const handleOpenAddModal = () => {
     setShowUpdateModal(true);
     setSelectedPatient(null);
@@ -45,6 +47,7 @@ export const useModals = () => {
     } else {
       await dispatch(addPatient(newPatient));
     }
+    setUpdateSuccess(true);
     setShowUpdateModal(false);
     dispatch(fetchPatients());
   };
@@ -53,6 +56,7 @@ export const useModals = () => {
     dispatch(deletePatient(patientToDelete.id));
     setOpenConfirmDialog(false);
     setPatientToDelete(null);
+    setUpdateSuccess(true);
   };
 
   return {
@@ -68,6 +72,8 @@ export const useModals = () => {
     handleCloseAddModal,
     handleOpenUpdateModal,
     handleAddAndUpdatePatient,
-    handleDeletePatient
+    handleDeletePatient,
+    setUpdateSuccess,
+    updateSuccess
   };
 };

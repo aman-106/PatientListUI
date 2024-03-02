@@ -7,7 +7,7 @@ import ConfirmationDialog from "./ConfirmationDialog";
 import PatientModal from "./PatientModal";
 import PatientsTable from "./PatientsTable";
 import PatientTableRow from "./PatientTableRow";
-import { Loader, ErrorState, Title } from "./CoomonComponents";
+import { SucessBanner,Loader, ErrorState, Title } from "./CoomonComponents";
 
 const PatientsList = () => {
   const dispatch = useDispatch();
@@ -27,7 +27,9 @@ const PatientsList = () => {
     handleCloseAddModal,
     handleOpenUpdateModal,
     handleAddAndUpdatePatient,
-    handleDeletePatient
+    handleDeletePatient,
+    setUpdateSuccess,
+    updateSuccess
   } = useModals();
 
   useEffect(() => {
@@ -39,6 +41,7 @@ const PatientsList = () => {
       <Grid item xs={12}>
         <Loader loading={loading} />
         <ErrorState error={error} />
+        <SucessBanner updateSuccess={updateSuccess} setUpdateSuccess={setUpdateSuccess}/>
         <Title />
         <Button variant="contained" onClick={handleOpenAddModal}>
           Add Patient
