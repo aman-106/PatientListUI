@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchPatients,
-  addPatient,
-  updatePatient,
-  deletePatient,
 } from "./redux/actions";
 import {
   Table,
@@ -23,70 +20,7 @@ import {
 } from "@mui/material";
 import PatientModal from "./PatientModal";
 import ConfirmationDialog from "./ConfirmationDialog";
-
-const usePatientActions = () => {
-  const dispatch = useDispatch();
-
-  const handleAddAndUpdatePatient = async (e, newPatient) => {
-    e.preventDefault();
-    if (newPatient.id) {
-      await dispatch(updatePatient(newPatient));
-    } else {
-      await dispatch(addPatient(newPatient));
-    }
-  };
-
-  const handleDeletePatient = (patientId) => {
-    dispatch(deletePatient(patientId));
-  };
-
-  return { handleAddAndUpdatePatient, handleDeletePatient };
-};
-
-const useModals = () => {
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [patientToDelete, setPatientToDelete] = useState(null);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState(null);
-
-  const handleOpenAddModal = () => {
-    setShowUpdateModal(true);
-    setSelectedPatient(null);
-  };
-
-  const handleCloseAddModal = () => {
-    setShowUpdateModal(false);
-  };
-
-  const handleOpenUpdateModal = (patient) => {
-    setSelectedPatient(patient);
-    setShowUpdateModal(true);
-  };
-
-  const handleOpenConfirmDialog = (patient) => {
-    setPatientToDelete(patient);
-    setOpenConfirmDialog(true);
-  };
-
-  const handleCloseConfirmDialog = () => {
-    setOpenConfirmDialog(false);
-    setPatientToDelete(null);
-  };
-
-  return {
-    openConfirmDialog,
-    setOpenConfirmDialog,
-    patientToDelete,
-    handleOpenConfirmDialog,
-    handleCloseConfirmDialog,
-    showUpdateModal,
-    setShowUpdateModal,
-    selectedPatient,
-    handleOpenAddModal,
-    handleCloseAddModal,
-    handleOpenUpdateModal,
-  };
-};
+import { usePatientActions, useModals } from "./usePatientActions";
 
 const PatientsList = () => {
   const dispatch = useDispatch();
