@@ -1,8 +1,6 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchPatients,
-} from "./redux/actions";
+import { fetchPatients } from "./redux/actions";
 import {
   Table,
   TableBody,
@@ -14,9 +12,10 @@ import {
   Button,
   Typography,
   Grid,
-  CircularProgress,
+  Box,
   Snackbar,
-  Alert
+  Alert,
+  LinearProgress,
 } from "@mui/material";
 import PatientModal from "./PatientModal";
 import ConfirmationDialog from "./ConfirmationDialog";
@@ -42,7 +41,6 @@ const PatientsList = () => {
     handleOpenUpdateModal,
   } = useModals();
 
-  // ... handle data fetching, error, and loading states
   // Fetch patients on component mount
   useEffect(() => {
     dispatch(fetchPatients());
@@ -51,16 +49,21 @@ const PatientsList = () => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        {/* Display loading indicator if loading is true */}
-        {loading && <CircularProgress size={48} />}
-
-        {/* Display error banner if error is present */}
-        {error && (
-          <Snackbar open={true} autoHideDuration={4000} onClose={() => null}>
-            <Alert severity="error">{error.message}</Alert> // Adjust error
-            message formatting as needed
-          </Snackbar>
+        {loading && (
+          <Box sx={{ width: "100%" }}>
+            <LinearProgress />
+          </Box>
         )}
+
+        <Snackbar
+          open={!!error}
+          autoHideDuration={4000}
+          onClose={() => null}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert severity="error">{(error && error.message) || error}</Alert>
+        </Snackbar>
+
         <Typography variant="h4" gutterBottom>
           Patients List
         </Typography>
