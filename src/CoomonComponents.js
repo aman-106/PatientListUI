@@ -24,7 +24,7 @@ export function ErrorState({ error }) {
 export function Loader({ loading }) {
   return (
     loading && (
-      <Box sx={{ width: "100%" }}>
+      <Box sx={{ width: "100%" }} data-testid="loader">
         <LinearProgress />
       </Box>
     )

@@ -23,7 +23,7 @@ const ConfirmationDialog = ({ open, onClose, patient, onConfirm }) => {
         <Button onClick={onClose} color="primary">
           Cancel
         </Button>
-        <Button onClick={onConfirm} color="error" variant="contained">
+        <Button onClick={onConfirm} color="error" variant="contained" data-testid="confirm-delete">
           Delete
         </Button>
       </DialogActions>

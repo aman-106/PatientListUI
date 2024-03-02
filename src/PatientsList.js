@@ -53,7 +53,7 @@ const PatientsList = () => {
 
       <Grid item xs={12}>
         <PatientsTable>
-          {patients.map((patient) => (
+          {patients && patients.map((patient) => (
             <PatientTableRow
               key={patient.id}
               patient={patient}
@@ -62,7 +62,7 @@ const PatientsList = () => {
             />
           ))}
         </PatientsTable>
-        {patients.length === 0 && (
+        {patients && patients.length === 0 && (
           <Paper elevation={3}>
             <Typography
               variant="body1"
