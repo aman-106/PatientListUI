@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Button, Grid } from "@mui/material";
+import { Button, Grid, Typography, Paper } from "@mui/material";
 import { fetchPatients } from "./redux/actions";
 import { useModals } from "./hooks";
 import ConfirmationDialog from "./ConfirmationDialog";
 import PatientModal from "./PatientModal";
 import PatientsTable from "./PatientsTable";
 import PatientTableRow from "./PatientTableRow";
-import { SucessBanner,Loader, ErrorState, Title } from "./CoomonComponents";
+import { SucessBanner, Loader, ErrorState, Title } from "./CoomonComponents";
 
 const PatientsList = () => {
   const dispatch = useDispatch();
@@ -29,7 +29,7 @@ const PatientsList = () => {
     handleAddAndUpdatePatient,
     handleDeletePatient,
     setUpdateSuccess,
-    updateSuccess
+    updateSuccess,
   } = useModals();
 
   useEffect(() => {
@@ -41,7 +41,10 @@ const PatientsList = () => {
       <Grid item xs={12}>
         <Loader loading={loading} />
         <ErrorState error={error} />
-        <SucessBanner updateSuccess={updateSuccess} setUpdateSuccess={setUpdateSuccess}/>
+        <SucessBanner
+          updateSuccess={updateSuccess}
+          setUpdateSuccess={setUpdateSuccess}
+        />
         <Title />
         <Button variant="contained" onClick={handleOpenAddModal}>
           Add Patient
@@ -59,6 +62,17 @@ const PatientsList = () => {
             />
           ))}
         </PatientsTable>
+        {patients.length === 0 && (
+          <Paper elevation={3}>
+            <Typography
+              variant="body1"
+              align="center"
+              style={{ padding: "20px" }}
+            >
+              No data available.
+            </Typography>
+          </Paper>
+        )}
 
         <ConfirmationDialog
           open={openConfirmDialog}
